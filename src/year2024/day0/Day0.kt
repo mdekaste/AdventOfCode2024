@@ -1,6 +1,8 @@
 package year2024.day0
 
 import core.*
+import core.twoDimensional.MutableGrid
+import core.twoDimensional.Point
 
 
 fun main() {
