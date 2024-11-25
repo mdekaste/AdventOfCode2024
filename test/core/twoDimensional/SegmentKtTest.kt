@@ -16,4 +16,13 @@ class SegmentKtTest {
         val segments = listOf(segment, segment2, segment3, segment4, segment5, segment6)
         println(segments.getOverlappingPoints())
     }
+
+    @Test
+    fun overlaps(){
+        val segment: Segment = (0 to -10) to (0 to 10)
+        val segment2: Segment = (0 to -10) to (0 to 10)
+
+        val segments = listOf(segment, segment2)
+        println(segments.getOverlappingPoints())
+    }
 }

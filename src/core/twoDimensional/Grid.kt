@@ -1,5 +1,7 @@
 package core.twoDimensional
 
+import java.util.PriorityQueue
+
 typealias Grid<T> = Map<Point, T>
 typealias MutableGrid<T> = MutableMap<Point, T>
 
@@ -65,4 +67,3 @@ fun <T> MutableGrid<T>.surroundWalls(default: T) {
 }
 
 fun <T> Grid<T>.surroundWalls(default: T): Grid<T> = toMutableMap().apply { surroundWalls(default) }
-
