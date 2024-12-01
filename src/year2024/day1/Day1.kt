@@ -2,7 +2,7 @@ package year2024.day1
 
 import core.*
 import core.inputParsing.extractInts
-import kotlin.collections.reduce
+import core.interval.IntIncrementable.mutableIntervalMapOf
 import kotlin.math.abs
 
 fun main(){
@@ -21,6 +21,6 @@ class Day1 : Challenge(){
     override fun part1() = left.zip(right, Int::minus).sumOf(::abs)
 
     override fun part2() = with(left.groupingBy().reduce(Int::plus).withDefault { 0 }){
-       right.sumOf(::getValue)
+        right.sumOf(::getValue)
     }
 }

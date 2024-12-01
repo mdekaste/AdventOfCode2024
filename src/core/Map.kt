@@ -36,3 +36,13 @@ fun <K, V> Map<K, V>.bfs(
 }
 
 fun <K, V> Map<K,V>.keyOf(value: V): K = entries.first { it.value == value }.key
+
+@JvmName("mergeMap")
+fun <K, V> Map<K,V>.merge(other: Map<K,V>, mergeFunction: (V, V) -> V): Map<K,V> = toMutableMap().merge(other, mergeFunction)
+
+@JvmName("mergeMutableMap")
+fun <K, V> MutableMap<K,V>.merge(other: Map<K,V>, mergeFunction: (V, V) -> V): MutableMap<K, V> = apply {
+    other.forEach { (key, value) ->
+        this[key] = mergeFunction(this[key] ?: value, value)
+    }
+}
