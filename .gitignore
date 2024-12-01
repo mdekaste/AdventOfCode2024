@@ -33,4 +33,4 @@ bin/
 
 **/*.txt
 AdventOfCode2024.iml
-misc.xml
+.xml
