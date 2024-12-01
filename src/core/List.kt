@@ -9,3 +9,7 @@ fun List<String>.toGraph(width: Int = 1) = buildMap<Point, String> {
         }
     }
 }
+
+fun <T> List<List<T>>.unzip(): List<List<T>> {
+    return List(get(0).size) { i -> map { it[i] } }
+}

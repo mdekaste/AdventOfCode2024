@@ -1,6 +1,8 @@
 package year2024.day1
 
-import core.Challenge
+import core.*
+import core.inputParsing.extractInts
+import kotlin.collections.reduce
 import kotlin.math.abs
 
 fun main(){
@@ -9,18 +11,16 @@ fun main(){
 }
 
 class Day1 : Challenge(){
-    val left: List<Int>
-    val right: List<Int>
-    init {
-        input.lines()
-            .map { it.split("   ").map(String::toInt).let { (a, b) -> a to b } }
-            .unzip()
-            .also { (l, r) -> left = l.sorted(); right = r.sorted() }
-    }
+    private val parsed = input.lines()
+        .map(String::extractInts)
+        .unzip()
+        .map { it.sorted() }
+    private val left = parsed.first()
+    private val right = parsed.last()
 
     override fun part1() = left.zip(right, Int::minus).sumOf(::abs)
 
-    override fun part2() = with(right.groupingBy { it }.eachCount()){
-       left.sumOf { it * getOrDefault(it, 0) }
+    override fun part2() = with(left.groupingBy().reduce(Int::plus).withDefault { 0 }){
+       right.sumOf(::getValue)
     }
 }
