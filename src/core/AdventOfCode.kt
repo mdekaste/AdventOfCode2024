@@ -14,8 +14,8 @@ abstract class AdventOfCode(
 
     fun solve(preheat: Int = 0) {
         repeat(preheat) {
-            try { part1() } catch(_: NotImplementedError){ }
-            try { part2() } catch(_: NotImplementedError){ }
+            builder.part1.invoke()
+            builder.part2.invoke()
         }
         val (part1, time1) = measureTimedValue { builder.part1.invoke() }
         val (part2, time2) = measureTimedValue { builder.part2.invoke() }
