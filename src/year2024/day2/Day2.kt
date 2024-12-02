@@ -2,6 +2,12 @@ package year2024.day2
 
 import core.AdventOfCode
 import core.inputParsing.extractInts
+import jdk.internal.util.random.RandomSupport.AbstractSpliteratorGenerator.ints
+import kotlin.collections.filterIndexed
+import kotlin.collections.lastIndex
+import kotlin.coroutines.EmptyCoroutineContext.fold
+import kotlin.math.abs
+import kotlin.math.sign
 
 fun main(){
     val day2 = Day2()
@@ -12,22 +18,11 @@ fun main(){
 /** Going to do a builder pattern from now on I think */
 class Day2: AdventOfCode({
     val parsed = input.lines().map { it.extractInts() }
-
     part1{
-        parsed.filter {
-            val list = it.zipWithNext { a, b -> b - a }
-            (list.all { it >= 0 } && list.all { it in 1..3 }) || (list.all { it <= 0 } && list.all { it in -3..-1})
-        }.count()
+        parsed.count(List<Int>::isSafe)
     }
-
-    fun isSafe(list: List<Int>): Boolean {
-        val list = list.zipWithNext { a, b -> b - a }
-        return (list.all { it >= 0 } && list.all { it in 1..3 }) || (list.all { it <= 0 } && list.all { it in -3..-1})
-    }
-
     part2{
-        parsed.filter { list ->
-            isSafe(list) || list.mapIndexed { index, i -> list.subList(0, index) + list.subList(index + 1, list.size) }.any{ isSafe(it) }
-        }.count()
+        parsed.count { line -> line.indices.any { i -> line.filterIndexed { i2, _ -> i2 != i }.isSafe() } }
     }
 })
+fun List<Int>.isSafe() = zipWithNext{ a, b -> b - a }.let{ it.all{ it in 1..3 } || it.all{ it in -3..-1 } }
