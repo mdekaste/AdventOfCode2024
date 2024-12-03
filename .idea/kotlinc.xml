@@ -11,7 +11,7 @@
     <option name="languageVersion" value="2.1" />
   </component>
   <component name="KotlinCompilerSettings">
-    <option name="additionalArguments" value="-Xcontext-receivers" />
+    <option name="additionalArguments" value="-Xcontext-receivers -Xwhen-guards" />
   </component>
   <component name="KotlinJpsPluginSettings">
     <option name="version" value="2.1.0" />
