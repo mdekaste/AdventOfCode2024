@@ -2,6 +2,8 @@ package core.inputParsing
 
 fun String.extractInts(): List<Int> = Regex("""-?\d+""").findAll(this).map { it.value.toInt() }.toList()
 
+fun String.splitOnEmptyLine(): List<String> = split("\n\n")
+
 operator fun MatchResult.component1() = groupValues.getOrNull(1)
 operator fun MatchResult.component2() = groupValues.getOrNull(2)
 operator fun MatchResult.component3() = groupValues.getOrNull(3)
