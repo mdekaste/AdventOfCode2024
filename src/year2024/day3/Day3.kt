@@ -4,11 +4,10 @@ import core.AdventOfCode
 
 fun main(){
     val day3 = Day3()
-    day3.part1()
-    day3.part2()
+    day3.solve(10000)
 }
+private val regex = """(mul\((\d+),(\d+)\)|do\(\)|don't\(\))""".toRegex()
 class Day3 : AdventOfCode({
-    val regex = """(mul\((\d+),(\d+)\)|do\(\)|don't\(\))""".toRegex()
     val parsed = regex.findAll(input).map(Instruction::of)
 
     part1 {
