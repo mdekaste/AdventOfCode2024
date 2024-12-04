@@ -1,6 +1,8 @@
 package year2024.day4
 
 import core.AdventOfCode
+import core.inputParsing.extractInts
+import core.interval.Interval
 import core.toGraph
 import core.twoDimensional.*
 
@@ -15,35 +17,23 @@ fun main(){
 class Day4 : AdventOfCode({
     val parsed = input.lines().toGraph()
 
+    fun Grid<String>.grow(origin: Point, amount: Int, vararg directions: Point): List<String> = buildList {
+        for(direction in directions) {
+            add(generateSequence(origin, direction::plus).take(amount).map(this@grow::get).joinToString(""))
+        }
+    }
+
     part1{
-        parsed.map { (k ,v) ->
-            if(v != "X") return@map 0
-            val east = v == "X" && parsed.get(k.east()) == "M" && parsed.get(k.east().east()) == "A" && parsed.get(k.east().east().east()) == "S"
-            val south = k.south().let { parsed.get(it) == "M" && parsed.get(it.south()) == "A" && parsed.get(it.south().south()) == "S" }
-            val southEast = k.south().east().let { parsed.get(it) == "M" && parsed.get(it.southEast()) == "A" && parsed.get(it.southEast().southEast()) == "S" }
-            val southWest = k.southWest().let { parsed.get(it) == "M" && parsed.get(it.southWest()) == "A" && parsed.get(it.southWest().southWest()) == "S" }
-            val northEast = k.northEast().let { parsed.get(it) == "M" && parsed.get(it.northEast()) == "A" && parsed.get(it.northEast().northEast()) == "S" }
-            val north = k.north().let { parsed.get(it) == "M" && parsed.get(it.north()) == "A" && parsed.get(it.north().north()) == "S" }
-            val northWest = k.northWest().let { parsed.get(it) == "M" && parsed.get(it.northWest()) == "A" && parsed.get(it.northWest().northWest()) == "S" }
-            val west = k.west().let { parsed.get(it) == "M" && parsed.get(it.west()) == "A" && parsed.get(it.west().west()) == "S" }
-            listOf(east, south, southEast, southWest, northEast, north, northWest, west).count { it }
-        }.onEach { println(it) }.sum()
+        parsed.keys.sumOf { key ->
+            parsed.grow(key, 4, *WINDS).count("XMAS"::equals)
+        }
     }
 
 
     part2{
-        parsed.map {
-            var sum = 0
-            val southEast = it.key.let { parsed.get(it) == "M" && parsed.get(it.southEast()) == "A" && parsed.get(it.southEast().southEast()) == "S" }
-            val northWest = it.key.southEast().southEast().let { parsed.get(it) == "M" && parsed.get(it.northWest()) == "A" && parsed.get(it.northWest().northWest()) == "S" }
-            if(southEast || northWest){
-                val southwest = it.key.east().east().let { parsed.get(it) == "M" && parsed.get(it.southWest()) == "A" && parsed.get(it.southWest().southWest()) == "S" }
-                val northeast = it.key.south().south().let { parsed.get(it) == "M" && parsed.get(it.northEast()) == "A" && parsed.get(it.northEast().northEast()) == "S" }
-                if(southwest || northeast) sum++
-            }
-            sum
-        }.sum()
+        parsed.keys.count { key ->
+            parsed.grow(key + NORTH_WEST, 3, SOUTH_EAST).any { it in listOf("SAM", "MAS") } &&
+            parsed.grow(key + NORTH_EAST, 3, SOUTH_WEST).any { it in listOf("SAM", "MAS") }
+        }
     }
-
-
 })

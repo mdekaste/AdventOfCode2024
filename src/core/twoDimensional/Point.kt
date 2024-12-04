@@ -19,9 +19,9 @@ operator fun Point.minus(other: Point) = y - other.y to x - other.x
 
 operator fun Point.times(amount: Int) = y * amount to x * amount
 
-val CARDINALS = listOf(NORTH, EAST, SOUTH, WEST)
-val INTERCARDINALS = listOf(NORTH_EAST, SOUTH_EAST, SOUTH_WEST, NORTH_WEST)
-val WINDS = listOf(NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST)
+val CARDINALS = arrayOf(NORTH, EAST, SOUTH, WEST)
+val INTERCARDINALS = arrayOf(NORTH_EAST, SOUTH_EAST, SOUTH_WEST, NORTH_WEST)
+val WINDS = arrayOf(NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST)
 fun Point.cardinals() = CARDINALS.map { it + this }
 fun Point.intercardinals() = INTERCARDINALS.map { it + this }
 fun Point.winds() = WINDS.map { it + this }
