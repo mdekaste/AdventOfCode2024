@@ -1,5 +1,7 @@
 package core.inputParsing
 
+import core.twoDimensional.Grid
+
 fun String.extractInts(): List<Int> = Regex("""-?\d+""").findAll(this).map { it.value.toInt() }.toList()
 
 fun String.splitOnEmptyLine(): List<String> = split("\n\n")
@@ -14,3 +16,5 @@ operator fun MatchResult.component7() = groupValues.getOrNull(7)
 operator fun MatchResult.component8() = groupValues.getOrNull(8)
 operator fun MatchResult.component9() = groupValues.getOrNull(9)
 operator fun MatchResult.component10() = groupValues.getOrNull(10)
+
+fun String.toGrid(): Grid<Char> = lines().flatMapIndexed { y, line -> line.mapIndexed { x, c -> y to x to c } }.toMap()
