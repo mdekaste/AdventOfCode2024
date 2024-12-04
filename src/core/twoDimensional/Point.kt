@@ -46,3 +46,8 @@ operator fun Point.inc() = rotateRight()
 
 fun Point.perpendicular() = listOf(rotateLeft(), rotateRight())
 operator fun Point.not() = listOf(rotateLeft(), -this, rotateRight())
+
+/**
+ * Returns a list of points from this point to the other point
+ */
+fun Point.extend(direction: Point, amount: Int) = List(amount){ this + direction * it }
