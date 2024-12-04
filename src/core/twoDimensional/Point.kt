@@ -1,5 +1,7 @@
 package core.twoDimensional
 
+import kotlin.math.absoluteValue
+
 typealias Point = Pair<Int, Int>
 val Point.y get() = first
 val Point.x get() = second
@@ -51,3 +53,27 @@ operator fun Point.not() = listOf(rotateLeft(), -this, rotateRight())
  * Returns a list of points from this point to the other point
  */
 fun Point.extend(direction: Point, amount: Int) = List(amount){ this + direction * it }
+
+fun Point.walkTo(other: Point, inclusive: Boolean = false): List<Point> = when {
+    other.x == x && other.y == y -> listOf(this)
+    other.x == x && other.y > y -> extend(SOUTH, other.y - y + if(inclusive) 1 else 0)
+    other.x == x && other.y < y -> extend(NORTH, y - other.y + if(inclusive) 1 else 0)
+    other.y == y && other.x > x -> extend(EAST, other.x - x + if(inclusive) 1 else 0)
+    other.y == y && other.x < x -> extend(WEST, x - other.x + if(inclusive) 1 else 0)
+    other.x - x == other.y - y && other.x > x -> extend(SOUTH_EAST, other.x - x + if(inclusive) 1 else 0)
+    other.x - x == other.y - y && other.x < x -> extend(NORTH_WEST, x - other.x + if(inclusive) 1 else 0)
+    other.x - x == y - other.y && other.x > x -> extend(SOUTH_WEST, other.x - x + if(inclusive) 1 else 0)
+    other.x - x == y - other.y && other.x < x -> extend(NORTH_EAST, x - other.x + if(inclusive) 1 else 0)
+    else -> error("unsupported walk")
+}
+
+/**
+ * Works under the assumption that the final point of this list connects back to the start via a 2D polygon
+ * returns the area WITHIN the polygon e.g. not the area of the polygon itself
+ *
+ */
+fun List<Point>.area() = (this + get(0))
+    .zipWithNext(Point::walkTo)
+    .flatten()
+    .zipWithNext { (y1, x1), (_, x2) -> (x2 - x1) * y1 }
+    .sum().absoluteValue - size / 2 + 1

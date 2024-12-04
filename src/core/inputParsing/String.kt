@@ -3,6 +3,10 @@ package core.inputParsing
 import core.twoDimensional.Grid
 
 fun String.extractInts(): List<Int> = Regex("""-?\d+""").findAll(this).map { it.value.toInt() }.toList()
+fun String.extractLongs(): List<Long> = Regex("""-?\d+""").findAll(this).map { it.value.toLong() }.toList()
+fun String.extractDoubles(): List<Double> = Regex("""-?\d+(\.\d+)?""").findAll(this).map { it.value.toDouble() }.toList()
+fun String.extractWords(): List<String> = Regex("""\w+""").findAll(this).map { it.value }.toList()
+
 
 operator fun MatchResult.component1() = groupValues.getOrNull(1)
 operator fun MatchResult.component2() = groupValues.getOrNull(2)
