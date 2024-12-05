@@ -12,20 +12,17 @@ fun main(){
 
 
 class Day5 : AdventOfCode({
-    input.splitOnEmptyLine()
-        .map { it.lines().map(String::extractInts) }
-        .also { (rawOrder, rawBooks) ->
-            val order = rawOrder.groupBy(List<*>::first, List<*>::last)
-                .mapValues { it.value.toSet() }
-                .withDefault { emptySet() }
-            val booksWithSorted = rawBooks.associateWith { set -> set.sortedByDescending { set.intersect(order.getValue(it)).size } }
+    val booksWithSorted = run {
+        val (rawOrder, rawBooks) = input.splitOnEmptyLine().map { it.lines().map(String::extractInts) }
+        val order = rawOrder.groupBy(List<*>::first, List<*>::last)
+        rawBooks.associateWith { set -> set.sortedByDescending { order[it]?.count { it in set } ?: 0} }
+    }
 
-            part1 {
-                booksWithSorted.filter { it.key == it.value }.values.sumOf { it[it.size/2] }
-            }
+    part1 {
+        booksWithSorted.filter { it.key == it.value }.values.sumOf { it[it.size/2] }
+    }
 
-            part2{
-                booksWithSorted.filter { it.key != it.value }.values.sumOf { it[it.size/2] }
-            }
-        }
+    part2{
+        booksWithSorted.filter { it.key != it.value }.values.sumOf { it[it.size/2] }
+    }
 })
