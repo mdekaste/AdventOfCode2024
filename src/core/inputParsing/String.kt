@@ -8,7 +8,7 @@ fun String.extractDoubles(): List<Double> = Regex("""-?\d+(\.\d+)?""").findAll(t
 fun String.extractWords(): List<String> = Regex("""\w+""").findAll(this).map { it.value }.toList()
 
 
-fun String.splitOnEmptyLine(): List<String> = split("\n\n")
+fun String.splitOnEmptyLine(): List<String> = this.split(System.lineSeparator() + System.lineSeparator())
 
 operator fun MatchResult.component1() = groupValues.getOrNull(1)
 operator fun MatchResult.component2() = groupValues.getOrNull(2)
