@@ -25,4 +25,4 @@ class Day2: AdventOfCode({
         parsed.count { line -> line.indices.any { i -> line.filterIndexed { i2, _ -> i2 != i }.isSafe() } }
     }
 })
-fun List<Int>.isSafe() = zipWithNext{ a, b -> b - a }.let{ it.all{ it in 1..3 } || it.all{ it in -3..-1 } }
+private fun List<Int>.isSafe() = zipWithNext{ a, b -> b - a }.let{ it.all{ it in 1..3 } || it.all{ it in -3..-1 } }

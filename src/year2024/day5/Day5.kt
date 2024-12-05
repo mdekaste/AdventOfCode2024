@@ -15,7 +15,7 @@ class Day5 : AdventOfCode({
     val booksWithSorted = run {
         val (rawOrder, rawBooks) = input.splitOnEmptyLine().map { it.lines().map(String::extractInts) }
         val order = rawOrder.groupBy(List<*>::first, List<*>::last)
-        rawBooks.associateWith { set -> set.sortedByDescending { order[it]?.count { it in set } ?: 0} }
+        rawBooks.associateWith { set -> set.sortedByDescending { order[it]?.count(set::contains) ?: 0} }
     }
 
     part1 {
