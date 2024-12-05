@@ -12,27 +12,20 @@ fun main(){
 
 
 class Day5 : AdventOfCode({
-    val (map, pages) = input.splitOnEmptyLine().let { (a,b) ->
-        a.lines() to b.lines()
-    }.let{ (a,b) -> a.map { it.extractInts().let { (c,d) -> c to d  } }.groupBy ({ it.first }, { it.second}) to b }
+    input.splitOnEmptyLine()
+        .map { it.lines().map(String::extractInts) }
+        .also { (rawOrder, rawBooks) ->
+            val order = rawOrder.groupBy(List<*>::first, List<*>::last)
+                .mapValues { it.value.toSet() }
+                .withDefault { emptySet() }
+            val booksWithSorted = rawBooks.associateWith { set -> set.sortedByDescending { set.intersect(order.getValue(it)).size } }
 
-    fun List<Int>.isSortedCorrectly(map: Map<Int, List<Int>> ): Boolean{
-        return zipWithNext { a, b -> b in map.getOrElse(a){ emptyList() } }.all { it }
-    }
-
-    part1 {
-        pages.map { it.extractInts() }.filter { it.isSortedCorrectly(map) }.map { it[it.size / 2] }.sum()
-    }
-
-    fun List<Int>.sort(map: Map<Int, List<Int>>): List<Int> {
-        return IntArray(size).apply {
-            for(element in this@sort){
-                set(map.getValue(element).let { this@sort.intersect(it) }.size, element)
+            part1 {
+                booksWithSorted.filter { it.key == it.value }.values.sumOf { it[it.size/2] }
             }
-        }.reversed().toList()
-    }
 
-    part2{
-        pages.map { it.extractInts() }.filter { !it.isSortedCorrectly(map) }.map { it.sort(map) }.map { it[it.size / 2] }.sum()
-    }
+            part2{
+                booksWithSorted.filter { it.key != it.value }.values.sumOf { it[it.size/2] }
+            }
+        }
 })
