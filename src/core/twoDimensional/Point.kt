@@ -40,8 +40,8 @@ fun Point.northWest() = this + NORTH_WEST
 
 operator fun Point.unaryMinus() = -y to -x
 
-fun Point.rotateRight() = -x to y
-fun Point.rotateLeft() = x to -y
+fun Point.rotateRight() = x to -y
+fun Point.rotateLeft() = -x to y
 
 operator fun Point.dec() = rotateLeft()
 operator fun Point.inc() = rotateRight()
