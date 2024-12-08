@@ -7,7 +7,7 @@ import core.twoDimensional.*
 
 fun main(){
     val day8 = Day8()
-    day8.solve(10000000)
+    day8.solve(10000)
 }
 
 class Day8 : AdventOfCode({
@@ -20,7 +20,7 @@ class Day8 : AdventOfCode({
         .flatMap { it.product() }
 
     fun solve(antinodeGenerator: (Segment) -> Sequence<Point>): Int = antennaPairs
-        .flatMap{ antinodeGenerator(it) }.distinct().size
+        .flatMapTo(HashSet()){ antinodeGenerator(it) }.size
 
     part1 {
         solve { (a, b) -> sequenceOf(a * 2 - b, b * 2 - a).filter { it in grid } }
