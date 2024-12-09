@@ -7,7 +7,7 @@ import core.twoDimensional.*
 
 fun main(){
     val day8 = Day8()
-    day8.solve(10000)
+    day8.solve(1000000)
 }
 
 class Day8 : AdventOfCode({
