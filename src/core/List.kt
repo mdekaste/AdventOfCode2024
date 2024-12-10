@@ -3,6 +3,8 @@ package core
 import core.twoDimensional.Point
 import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
+import java.util.*
+import java.util.stream.Collectors.toList
 
 fun List<String>.toGraph(width: Int = 1) = buildMap<Point, String> {
     forEachIndexed { y, line ->
@@ -15,6 +17,19 @@ fun List<String>.toGraph(width: Int = 1) = buildMap<Point, String> {
 fun <T> List<List<T>>.unzip(): List<List<T>> {
     return List(get(0).size) { i -> map { it[i] } }
 }
+
+fun <T> SortedSet<T>.median(onDouble: (T, T) -> T): T {
+    val indexable = toList()
+    if(indexable.size % 2 == 1){
+        return indexable[indexable.size / 2]
+    } else {
+        val left = indexable[indexable.size / 2 - 1]
+        val right = indexable[indexable.size / 2]
+        return onDouble(left, right)
+    }
+}
+
+fun SortedSet<Int>.median() = median{ left, right -> (left + right) / 2 }
 
 fun <T> List<T>.product(): List<Pair<T, T>> = subList(0, lastIndex).flatMapIndexed { index, pair -> subList(index + 1, size).map { pair to it } }
 
