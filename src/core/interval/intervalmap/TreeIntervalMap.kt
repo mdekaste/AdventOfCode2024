@@ -168,6 +168,16 @@ class TreeIntervalMap<K : Comparable<K>, V>(
         return AbstractMap.SimpleEntry(from(from), value)
     }
 
+    override fun middleEntries(): Set<Map.Entry<Closed<K>, V>> {
+        return buildSet {
+            for((fromEntry, untilEntry) in _backingMap.entries.zipWithNext()) {
+                val (from: K?, _) = fromEntry
+                val (until: K?, value) = untilEntry
+                add(AbstractMap.SimpleEntry((from ?: continue) until (until ?: continue), value))
+            }
+        }
+    }
+
     override fun get(key: K): V {
         return _backingMap.getValue(key)
     }

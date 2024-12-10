@@ -1,70 +1,48 @@
 package year2024.day9
 
 import core.AdventOfCode
+import java.util.*
 
 fun main(){
     val day9 = Day9()
     day9.solve()
 }
 
-class Day9 : AdventOfCode({
-    val parsed = input.map { it.digitToInt() }
 
-    part1 {
-        var counter = 0
-        val numbers = parsed.fold(listOf<Int?>() to false){ (acc, last), i ->
-            if(!last){
-                val result = acc + List(i){ counter }
-                counter++
-                result to true
-            } else {
-                acc + List(i){ null } to false
-            }
-        }.first.toMutableList()
-        println(numbers)
+class Day9 : AdventOfCode({
+    val parsed = input.flatMapIndexed{ index, c -> List(c - '0'){ if(index % 2 == 0) index / 2 else null } }
+
+    fun List<Int?>.toResult(): Long =
+        mapIndexed { index, i -> index.toLong() * (i ?: 0) }.sum()
+
+    part1{
+        val memory = parsed.toMutableList()
         var left = 0
-        var right = numbers.lastIndex
-        while(left < right){
-            if(numbers[left] != null){
-                left++
-            } else if(numbers[right] == null){
-                right--
-            } else {
-                numbers[left] = numbers[right]
-                numbers[right] = null
-                left++
-                right--
+        var right = memory.lastIndex
+        while(left <= right) {
+            when {
+                memory[left] != null -> left++
+                memory[right] == null -> right--
+                else -> memory[left++] = memory[right--]
             }
         }
-        println(numbers)
-        numbers.takeWhile { it != null }.mapIndexed { index, i -> index * i!!.toLong() }.sum()
+        memory.take(left).toResult()
     }
 
-    part2 {
-        var sizes = mutableMapOf<Int, IntRange>()
-        var counter = 0
-        var sum = 0
-        val numbers = parsed.fold(listOf<Int?>() to false){ (acc, last), i ->
-            sum += i
-            if(!last){
-                val result = acc + List(i){ counter }
-                sizes.put(counter, sum - i until sum)
-                counter++
-                result to true
-            } else {
-                acc + List(i){ null } to false
-            }
-        }.first.toMutableList()
-        for((id, range) in sizes.entries.reversed()){
-            val size = range.last - range.first + 1
-            val window = numbers.subList(0, range.first).windowed(size, 1, false).indexOfFirst { it.all { it == null } }.takeIf { it != -1 } ?: continue
-            for(i in window until window + size){
-                numbers[i] = id
-            }
-            for(i in range){
-                numbers[i] = null
+    part2{
+        val mem = input.map(Char::digitToInt).toIntArray()
+        val chunks = Array(mem.size){ mutableListOf<Int>() }
+        val removed = mutableSetOf<Int>()
+        for(i in mem.lastIndex downTo 0 step 2){
+            for(j in 1..<i step 2){
+                if(mem[j] >= mem[i]){
+                    removed += i / 2
+                    mem[j] -= mem[i]
+                    repeat(mem[i]){ chunks[j].add(i / 2) }
+                    mem[i] = 0
+                }
             }
         }
-        numbers.mapIndexed { index, i -> (i?.toLong() ?: 0) * index }.sum()
+        input.flatMapIndexed { index, c -> List(c.digitToInt()){ if(index % 2 == 0) (index / 2).takeIf { it in mem } else chunks[index].getOrNull(it) } }.also { println(it) }.toResult()
     }
 })

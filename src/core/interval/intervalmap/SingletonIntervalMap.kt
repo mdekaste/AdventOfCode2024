@@ -1,9 +1,6 @@
 package core.interval.intervalmap
 
-import core.interval.Incrementable
-import core.interval.Interval
-import core.interval.Open
-import core.interval.given
+import core.interval.*
 import core.interval.implementations.openInterval
 import java.io.Serializable
 import java.util.AbstractMap
@@ -22,6 +19,8 @@ private object SingletonIntervalMap : IntervalMap<Comparable<Any>, Nothing?>, Se
     override fun firstEntry(): Map.Entry<Interval.Left.Open<Comparable<Any>>, Nothing?> = ENTRY
 
     override fun lastEntry(): Map.Entry<Interval.Right.Open<Comparable<Any>>, Nothing?> = ENTRY
+
+    override fun middleEntries(): Set<Map.Entry<Closed<Comparable<Any>>, Nothing?>> = emptySet()
 
     override fun getEntry(key: Comparable<Any>): Map.Entry<Interval<Comparable<Any>>, Nothing?> = ENTRY
 
