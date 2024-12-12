@@ -13,3 +13,4 @@ infix fun Long.choose(other: Long): Long {
 infix fun Long.lcm(other: Long): Long = this * other / this gcd other
 infix fun Long.gcd(other: Long): Long = if (other == 0L) this else other gcd (this % other)
 
+fun Long.digits() = toString().map { it - '0' }

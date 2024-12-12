@@ -42,6 +42,17 @@ fun <T> Grid<T>.flipVertical(): Grid<T> = buildMap {
 
 fun <T> Grid<T>.rotateRight(): Grid<T> = transpose().flipHorizontal()
 fun <T> Grid<T>.rotateLeft(): Grid<T> = flipHorizontal().transpose()
+fun <T> Grid<T>.northWall(): List<T> = (0..(keys.maxOfOrNull { it.x } ?: 0)).map { getValue(Point(0, it)) }
+fun <T> Grid<T>.southWall(): List<T> = (0..(keys.maxOfOrNull { it.x } ?: 0)).map { getValue(Point(keys.maxOfOrNull { it.y } ?: 0, it)) }
+fun <T> Grid<T>.westWall(): List<T> = (0..(keys.maxOfOrNull { it.y } ?: 0)).map { getValue(Point(it, 0)) }
+fun <T> Grid<T>.eastWall(): List<T> = (0..(keys.maxOfOrNull { it.y } ?: 0)).map { getValue(Point(it, keys.maxOfOrNull { it.x } ?: 0)) }
+
+fun <T> Grid<T>.rotations(): List<Grid<T>> = listOf(
+    this,
+    rotateRight(),
+    rotateRight().rotateRight(),
+    rotateLeft()
+)
 
 fun <T> Grid<T>.toPrettyString(default: String): String = toPrettyString({ it.toString() }, { default })
 fun <T> Grid<T>.toPrettyString(): String = toPrettyString(" ")
@@ -66,4 +77,23 @@ fun <T> MutableGrid<T>.surroundWalls(default: T) {
     put(Point(maxY + 1, maxX + 1), default)
 }
 
+fun <T> Grid<T>.bounds(): Segment {
+    val maxX = keys.maxOfOrNull { it.x } ?: 0
+    val maxY = keys.maxOfOrNull { it.y } ?: 0
+    val minX = keys.minOfOrNull { it.x } ?: 0
+    val minY = keys.minOfOrNull { it.y } ?: 0
+
+    return (minX to maxX) to (minY to maxY)
+}
+
 fun <T> Grid<T>.surroundWalls(default: T): Grid<T> = toMutableMap().apply { surroundWalls(default) }
+
+fun <T> Grid<T>.corners(): Map<Point, T> {
+    val (_, _, minX, maxX, minY, maxY) = bounds()
+    return mapOf(
+        Point(minY, minX) to getValue(Point(minY, minX)),
+        Point(minY, maxX) to getValue(Point(minY, maxX)),
+        Point(maxY, minX) to getValue(Point(maxY, minX)),
+        Point(maxY, maxX) to getValue(Point(maxY, maxX)),
+    )
+}

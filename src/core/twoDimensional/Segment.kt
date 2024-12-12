@@ -33,3 +33,8 @@ fun Iterable<Segment>.getOverlappingPoints(): Set<Point> {
         }
     }
 }
+
+operator fun Segment.component3() = first.first
+operator fun Segment.component4() = first.second
+operator fun Segment.component5() = second.first
+operator fun Segment.component6() = second.second
