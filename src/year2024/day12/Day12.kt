@@ -9,14 +9,11 @@ import core.twoDimensional.minus
 
 fun main(){
     val day12 = Day12()
-    day12.solve()
+    day12.solve(1000)
 }
 
 class Day12 : AdventOfCode({
-    val parsed = input.toGrid()
-    val byType = parsed.entries.groupBy({it.value}, {it.key}).mapValues { it.value.toSet() }
-
-    fun Set<Point>.toGroups() = buildSet {
+    fun Set<Point>.toGroups(): Set<Set<Point>> = buildSet {
         fun grow(candidate: Point) = buildSet<Point> {
             add(candidate)
             val candidates = LinkedHashSet(this)
@@ -32,21 +29,22 @@ class Day12 : AdventOfCode({
             candidates.removeAll(group)
         }
     }
+    fun <T> List<Pair<Point, T>>.findGroups() = groupBy ({it.second}, {it.first})
+        .values
+        .flatMap { it.toSet().toGroups() }
 
-    val groups = byType.values.flatMap { it.toGroups() }
+    val groups = input.toGrid()
+        .entries
+        .map { it.key to it.value }
+        .findGroups()
 
     fun Set<Point>.perimeter() = sumOf { point -> point.cardinals().count { it !in this } }
-
     part1{
         groups.sumOf { it.size * it.perimeter() }
     }
 
-    fun Set<Point>.sides(): List<Set<Point>>{
-        val wallsByType = flatMap { point -> point.cardinals().filter { it !in this }.map { it - point to it } }.groupBy({it.first}, { it.second}).mapValues { it.value.toSet() }
-        return wallsByType.values.flatMap { it.toGroups() }
-    }
-
+    fun Set<Point>.sides() = flatMap { o -> o.cardinals().filter { it !in this }.map { it to it - o } }.findGroups().size
     part2{
-        groups.sumOf { it.size * it.sides().size }
+        groups.sumOf { it.size * it.sides() }
     }
 })
