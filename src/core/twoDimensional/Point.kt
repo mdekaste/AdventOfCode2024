@@ -20,6 +20,7 @@ operator fun Point.plus(other: Point) = y + other.y to x + other.x
 operator fun Point.minus(other: Point) = y - other.y to x - other.x
 
 operator fun Point.times(amount: Int) = y * amount to x * amount
+operator fun Point.rem(other: Point) = Math.floorMod(y, other.y) to Math.floorMod(x, other.x)
 
 val CARDINALS = arrayOf(NORTH, EAST, SOUTH, WEST)
 val INTERCARDINALS = arrayOf(NORTH_EAST, SOUTH_EAST, SOUTH_WEST, NORTH_WEST)
