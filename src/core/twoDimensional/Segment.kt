@@ -3,6 +3,8 @@ package core.twoDimensional
 import core.minMax
 
 typealias Segment = Pair<Point, Point>
+val Segment.origin get() = first
+val Segment.velocity get() = second
 
 fun Iterable<Segment>.getOverlappingPoints(): Set<Point> {
     val events = buildList<IntArray> {
