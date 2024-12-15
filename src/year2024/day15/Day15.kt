@@ -30,44 +30,26 @@ class Day15 : AdventOfCode({
         return true
     }
 
-    fun MutableMap<Point, Char>.specialMove(origin: Point, dir: Point): Boolean {
-        val visited = LinkedHashSet<Point>()
-        val frontier = ArrayDeque(listOf(origin))
-        while(frontier.isNotEmpty()){
-            val current = frontier.removeFirst()
-            visited.add(current)
-            when(getValue(current + dir)){
-                '#' -> return false
-                '[' -> {
-                    frontier.add(current + dir)
-                    frontier.add(current + dir + EAST)
-                }
-                ']' -> {
-                    frontier.add(current + dir)
-                    frontier.add(current + dir + WEST)
-                }
-            }
+    fun MutableMap<Point, Char>.nextSet(set: Set<Point>, dir: Point): Set<Point>? = set.flatMapTo(mutableSetOf()) { origin ->
+        when(get(origin + dir)){
+            '#' -> return null
+            '.' -> emptySet()
+            '[' -> if(dir in setOf(NORTH, SOUTH)) setOf(origin + dir, origin + dir + EAST) else setOf(origin + dir)
+            ']' -> if(dir in setOf(NORTH, SOUTH)) setOf(origin + dir, origin + dir + WEST) else setOf(origin + dir)
+            else -> setOf(origin + dir)
         }
-        visited.reversed().forEach {
-            move(it, dir)
-        }
-        return true
     }
 
-    fun MutableMap<Point, Char>.tryMove(origin: Point, dir: Point): Boolean = when(get(origin + dir)){
-        '.' -> move(origin, dir)
-        'O' -> tryMove(origin + dir, dir) && move(origin, dir)
-        '[', ']' -> when(dir){
-            EAST, WEST -> tryMove(origin + dir, dir) && move(origin, dir)
-            else -> specialMove(origin, dir)
-        }
-        else -> false
+    fun MutableMap<Point, Char>.tryMove(dir: Point, origins: Set<Point>): Boolean = when(val nextOrigins = nextSet(origins, dir)){
+        null -> false
+        emptySet<Point>() -> origins.all { move(it, dir) }
+        else -> tryMove(dir, nextOrigins) && origins.all { move(it, dir) }
     }
-
+    // Main algorithm
     fun MutableMap<Point, Char>.solve(box: Char): Int {
         var position = entries.first{ it.value == '@' }.key
         for(op in ops){
-            if(tryMove(position, op)){
+            if(tryMove(op, setOf(position))){
                 position += op
             }
         }
