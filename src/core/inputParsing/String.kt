@@ -1,6 +1,7 @@
 package core.inputParsing
 
 import core.twoDimensional.Grid
+import core.twoDimensional.MutableGrid
 
 fun String.extractInts(): List<Int> = Regex("""-?\d+""").findAll(this).map { it.value.toInt() }.toList()
 fun String.intsToSet(): Set<Int> = Regex("""-?\d+""").findAll(this).mapTo(mutableSetOf()) { it.value.toInt() }
@@ -23,3 +24,5 @@ operator fun MatchResult.component9() = groupValues.getOrNull(9)
 operator fun MatchResult.component10() = groupValues.getOrNull(10)
 
 fun String.toGrid(): Grid<Char> = lines().flatMapIndexed { y, line -> line.mapIndexed { x, c -> y to x to c } }.toMap()
+fun String.toGrid(ignore: Char): Grid<Char> = lines().flatMapIndexed { y, line -> line.mapIndexedNotNull { x, c -> c.takeIf { it != ignore }?.let { y to x to it } } }.toMap()
+fun String.toMutableGrid(ignore: Char): MutableGrid<Char> = lines().flatMapIndexed { y, line -> line.mapIndexedNotNull { x, c -> c.takeIf { it != ignore }?.let { y to x to it } } }.toMap(mutableMapOf())
