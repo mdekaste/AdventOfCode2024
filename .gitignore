@@ -34,3 +34,4 @@ bin/
 **/*.txt
 AdventOfCode2024.iml
 .xml
+.png

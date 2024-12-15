@@ -4,6 +4,10 @@ import core.AdventOfCode
 import core.groupingBy
 import core.inputParsing.extractInts
 import core.twoDimensional.*
+import java.awt.Image
+import java.awt.image.BufferedImage
+import java.io.File
+import javax.imageio.ImageIO
 
 fun main(){
     val day14 = Day14()
@@ -33,8 +37,13 @@ class Day14 : AdventOfCode({
     }
 
     part2{
-        robotGenerator().withIndex().firstOrNull { (_, segments) ->
-            segments.distinctBy { it.first } == segments
-        }?.index
+        buildSet{
+            robotGenerator().takeWhile(::add).forEachIndexed { index, segments ->
+                BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB).apply {
+                    segments.forEach { (point, _) -> setRGB(point.x, point.y, 0xFFFFFF) }
+                    ImageIO.write(this, "png", File("src/year2024/day14/output/frame${index - 1}.png"))
+                }
+            }
+        }
     }
 })
