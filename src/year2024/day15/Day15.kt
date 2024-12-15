@@ -11,116 +11,78 @@ fun main(){
 }
 
 class Day15 : AdventOfCode({
-    val (grid, lines) = input.splitOnEmptyLine().let { (grid, line) -> grid.toGrid() to line.lines() }
-
-    part1 {
-        val grid = grid.toMutableMap()
-        var position = grid.entries.first { it.value == '@' }.key
-        for(line in lines){
-            for(op in line){
-                val dir = when(op){
-                    '>' -> EAST
-                    '<' -> WEST
-                    '^' -> NORTH
-                    'v' -> SOUTH
-                    else -> error("")
-                }
-                val next = position + dir
-                if(grid[next] == 'O'){
-                   var box = next
-                   while(grid[box + dir] == 'O'){
-                       box += dir
-                   }
-                    when(grid[box + dir]){
-                        '#' -> continue
-                        '.' -> {
-                            grid[box + dir] = 'O'
-                            grid[position] = '.'
-                            grid[next] = '@'
-                        }
-                    }
-                }
-                if(grid[next] == '#') continue
-                if(grid[next] == '.'){
-                    grid[position] = '.'
-                    grid[next] = '@'
-                }
-                position = next
-            }
-        }
-        grid.entries.filter { it.value == 'O' }.sumOf { it.key.y * 100 + it.key.x }
+    //Input parsing
+    fun Char.toMove() = when(this){
+        '>' -> EAST
+        '<' -> WEST
+        '^' -> NORTH
+        'v' -> SOUTH
+        else -> error("invalid character in moves")
     }
+    fun List<String>.toMoves() = flatMap { line -> line.map(Char::toMove) }
+    val (grid, ops) = input.splitOnEmptyLine().let { (grid, line) -> grid to line.lines().toMoves() }
 
-    fun MutableMap<Point, Char>.move(origin: Point, dir: Point): Boolean{
+    //Move Logic
+    fun MutableMap<Point, Char>.move(origin: Point, dir: Point): Boolean {
         val character = getValue(origin)
         put(origin, '.')
         put(origin + dir, character)
         return true
     }
 
-    fun MutableMap<Point, Char>.tryMove(origin: Point, dir: Point): Boolean {
-        when(get(origin + dir)){
-            '#' -> return false
-            '.' -> return move(origin, dir)
-            '[',']' -> {
-                if(dir == NORTH || dir == SOUTH){
-                    val visited = mutableSetOf(origin)
-                    val frontier = LinkedHashSet(setOf(origin))
-                    while(frontier.isNotEmpty()){
-                        val current = frontier.removeFirst()
-                        visited += current
-                        when(getValue(current + dir)){
-                            '#' -> return false
-                            '.' -> continue
-                            '[',']' -> {
-                                frontier.add(current + dir)
-                                if(getValue(current + dir) == '['){
-                                    frontier += current + dir + EAST
-                                } else {
-                                    frontier += current + dir + WEST
-                                }
-                            }
-                        }
-                    }
-                    if(dir == SOUTH){
-                        visited.sortedByDescending { it.y }.forEach {
-                            move(it, dir)
-                        }
-                    }
-                    if(dir == NORTH){
-                        visited.sortedBy { it.y }.forEach {
-                            move(it, dir)
-                        }
-                    }
-                    return true
+    fun MutableMap<Point, Char>.specialMove(origin: Point, dir: Point): Boolean {
+        val visited = LinkedHashSet<Point>()
+        val frontier = ArrayDeque(listOf(origin))
+        while(frontier.isNotEmpty()){
+            val current = frontier.removeFirst()
+            visited.add(current)
+            when(getValue(current + dir)){
+                '#' -> return false
+                '[' -> {
+                    frontier.add(current + dir)
+                    frontier.add(current + dir + EAST)
                 }
-                if(tryMove(origin + dir, dir)){
-                    return move(origin, dir)
-                } else {
-                    return false
+                ']' -> {
+                    frontier.add(current + dir)
+                    frontier.add(current + dir + WEST)
                 }
             }
-            else -> error("")
         }
+        visited.reversed().forEach {
+            move(it, dir)
+        }
+        return true
+    }
+
+    fun MutableMap<Point, Char>.tryMove(origin: Point, dir: Point): Boolean = when(get(origin + dir)){
+        '.' -> move(origin, dir)
+        'O' -> tryMove(origin + dir, dir) && move(origin, dir)
+        '[', ']' -> when(dir){
+            EAST, WEST -> tryMove(origin + dir, dir) && move(origin, dir)
+            else -> specialMove(origin, dir)
+        }
+        else -> false
+    }
+
+    fun MutableMap<Point, Char>.solve(box: Char): Int {
+        var position = entries.first{ it.value == '@' }.key
+        for(op in ops){
+            if(tryMove(position, op)){
+                position += op
+            }
+        }
+        return entries.filter { it.value == box }.sumOf { it.key.y * 100 + it.key.x }
+    }
+
+    part1 {
+        grid.toGrid().toMutableMap().solve('O')
     }
 
     part2{
-        val grid = input.replace("#", "##").replace(".", "..").replace("@", "@.").replace("O", "[]").toGrid().toMutableMap()
-        var position = grid.entries.first { it.value == '@' }.key
-        for(line in lines){
-            for(op in line){
-                val dir = when(op){
-                    '>' -> EAST
-                    '<' -> WEST
-                    '^' -> NORTH
-                    'v' -> SOUTH
-                    else -> error("")
-                }
-                if(grid.tryMove(position, dir)){
-                    position += dir
-                }
-            }
-        }
-        grid.entries.filter { it.value == '[' }.sumOf { it.key.y * 100 + it.key.x }
+        grid.replace("#", "##")
+            .replace(".", "..")
+            .replace("O", "[]")
+            .replace("@", "@.")
+            .toGrid().toMutableMap().solve('[')
     }
 })

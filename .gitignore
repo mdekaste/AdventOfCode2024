@@ -35,3 +35,4 @@ bin/
 AdventOfCode2024.iml
 .xml
 .png
+*.png
