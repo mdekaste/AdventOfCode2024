@@ -39,10 +39,14 @@ abstract class AdventOfCode(
 class AdventOfCodeBuilder(val input: String) {
     var part1: () -> Any? = { "not implemented yet" }
     var part2: () -> Any? = { "not implemented yet" }
+    var parse: () -> Any? = { "not implemented yet" }
     fun part1(init: () -> Any?){
         part1 = init
     }
     fun part2(init: () -> Any?){
         part2 = init
+    }
+    fun parse(init: () -> Any?){
+        parse = init
     }
 }

@@ -4,6 +4,7 @@ import core.twoDimensional.Grid
 import core.twoDimensional.MutableGrid
 
 fun String.extractInts(): List<Int> = Regex("""-?\d+""").findAll(this).map { it.value.toInt() }.toList()
+fun String.extractBytes(): List<Byte> = Regex("""-?\d+""").findAll(this).map { it.value.toByte() }.toList()
 fun String.intsToSet(): Set<Int> = Regex("""-?\d+""").findAll(this).mapTo(mutableSetOf()) { it.value.toInt() }
 fun String.extractLongs(): List<Long> = Regex("""-?\d+""").findAll(this).map { it.value.toLong() }.toList()
 fun String.extractDoubles(): List<Double> = Regex("""-?\d+(\.\d+)?""").findAll(this).map { it.value.toDouble() }.toList()

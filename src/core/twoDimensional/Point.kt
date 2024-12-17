@@ -41,14 +41,14 @@ fun Point.northWest() = this + NORTH_WEST
 
 operator fun Point.unaryMinus() = -y to -x
 
-fun Point.rotateRight() = x to -y
-fun Point.rotateLeft() = -x to y
+fun Point.right() = x to -y
+fun Point.left() = -x to y
 
-operator fun Point.dec() = rotateLeft()
-operator fun Point.inc() = rotateRight()
+operator fun Point.dec() = left()
+operator fun Point.inc() = right()
 
-fun Point.perpendicular() = listOf(rotateLeft(), rotateRight())
-operator fun Point.not() = listOf(rotateLeft(), -this, rotateRight())
+fun Point.perpendicular() = listOf(left(), right())
+operator fun Point.not() = listOf(left(), -this, right())
 
 /**
  * Returns a list of points from this point to the other point

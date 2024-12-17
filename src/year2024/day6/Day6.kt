@@ -2,7 +2,6 @@ package year2024.day6
 
 import core.AdventOfCode
 import core.inputParsing.toGrid
-import core.merge
 import core.twoDimensional.*
 
 fun main(){
@@ -20,7 +19,7 @@ class Day6: AdventOfCode({
         while(grid[cur] != null){
             when{
                 !getOrPut(cur, ::mutableSetOf).add(dir) -> return null
-                cur + dir == obstacle || grid[cur + dir] == '#' -> dir = dir.rotateRight()
+                cur + dir == obstacle || grid[cur + dir] == '#' -> dir = dir.right()
                 else -> cur += dir
             }
         }

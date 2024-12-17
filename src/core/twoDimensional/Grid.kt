@@ -1,7 +1,5 @@
 package core.twoDimensional
 
-import java.util.PriorityQueue
-
 typealias Grid<T> = Map<Point, T>
 typealias MutableGrid<T> = MutableMap<Point, T>
 
@@ -40,8 +38,8 @@ fun <T> Grid<T>.flipVertical(): Grid<T> = buildMap {
     }
 }
 
-fun <T> Grid<T>.rotateRight(): Grid<T> = transpose().flipHorizontal()
-fun <T> Grid<T>.rotateLeft(): Grid<T> = flipHorizontal().transpose()
+fun <T> Grid<T>.right(): Grid<T> = transpose().flipHorizontal()
+fun <T> Grid<T>.left(): Grid<T> = flipHorizontal().transpose()
 fun <T> Grid<T>.northWall(): List<T> = (0..(keys.maxOfOrNull { it.x } ?: 0)).map { getValue(Point(0, it)) }
 fun <T> Grid<T>.southWall(): List<T> = (0..(keys.maxOfOrNull { it.x } ?: 0)).map { getValue(Point(keys.maxOfOrNull { it.y } ?: 0, it)) }
 fun <T> Grid<T>.westWall(): List<T> = (0..(keys.maxOfOrNull { it.y } ?: 0)).map { getValue(Point(it, 0)) }
@@ -49,9 +47,9 @@ fun <T> Grid<T>.eastWall(): List<T> = (0..(keys.maxOfOrNull { it.y } ?: 0)).map 
 
 fun <T> Grid<T>.rotations(): List<Grid<T>> = listOf(
     this,
-    rotateRight(),
-    rotateRight().rotateRight(),
-    rotateLeft()
+    right(),
+    right().right(),
+    left()
 )
 
 fun <T> Grid<T>.toPrettyString(default: String): String = toPrettyString({ it.toString() }, { default })
