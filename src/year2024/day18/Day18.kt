@@ -16,11 +16,11 @@ class Day18 : AdventOfCode({
     val parsed = input.lines().map { it.extractInts() }.map { (x, y) -> x to y }
 
     fun floodFill(points: Set<Point>): Int? {
-        var frontier = setOf(ORIGIN)
+        var frontier = listOf(ORIGIN)
         val visited = mutableSetOf<Point>()
         var iteration = 0
         while(frontier.isNotEmpty()){
-            frontier = buildSet<Point> {
+            frontier = buildList{
                 for(point in frontier){
                     for(neighbour in point.cardinals()){
                         if(neighbour.x in 0..70 && neighbour.y in 0..70 && neighbour !in points && visited.add(neighbour)){
