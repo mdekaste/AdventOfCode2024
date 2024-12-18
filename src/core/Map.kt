@@ -1,5 +1,7 @@
 package core
 
+import core.twoDimensional.toPrettyString
+
 fun <K, V> Map<K, List<V>>.toGraph(valueMapper: (V) -> Any ) {
     digraph {
         this@toGraph.forEach { (key, value) ->
