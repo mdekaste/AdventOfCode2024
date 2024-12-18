@@ -9,42 +9,42 @@ import kotlin.math.absoluteValue
 
 fun main(){
     val day18 = Day18()
-    day18.solve()
+    day18.solve(10000)
 }
 
 class Day18 : AdventOfCode({
     val parsed = input.lines().map { it.extractInts() }.map { (x, y) -> x to y }
 
-    fun floodFill(points: Set<Point>): Int? {
+    fun floodFill(points: Set<Point>): Int {
         var frontier = listOf(ORIGIN)
         val visited = mutableSetOf<Point>()
         var iteration = 0
         while(frontier.isNotEmpty()){
-            frontier = buildList{
-                for(point in frontier){
-                    for(neighbour in point.cardinals()){
-                        if(neighbour.x in 0..70 && neighbour.y in 0..70 && neighbour !in points && visited.add(neighbour)){
-                            if(neighbour == 70 to 70){
-                                return iteration + 1
-                            }
-                            add(neighbour)
-                        }
+            val nextFrontier = ArrayDeque<Point>()
+            for(point in frontier){
+                for(neighbour in point.cardinals()){
+                    if(neighbour == 70 to 70){
+                        return iteration + 1
+                    }
+                    if(neighbour !in points && neighbour.x in 0..70 && neighbour.y in 0..70 && visited.add(neighbour)){
+                        nextFrontier.add(neighbour)
                     }
                 }
             }
+            frontier = nextFrontier
             iteration++
         }
-        return null
+        return -iteration
     }
 
     part1{
-        floodFill(parsed.take(1024).toSet())
+        floodFill(parsed.subList(0, 1024).toSet())
     }
 
     part2 {
         (1..parsed.size)
-            .map(parsed::take)
-            .binarySearch { if(floodFill(it.toSet()) == null) 1 else -1 }
+            .toList()
+            .binarySearch(1024) { -floodFill(parsed.subList(0, it).toSet()) }
             .let { parsed[it.absoluteValue - 1] }
     }
 })
