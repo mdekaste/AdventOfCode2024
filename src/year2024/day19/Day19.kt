@@ -5,7 +5,7 @@ import core.inputParsing.splitOnEmptyLine
 
 fun main(){
     val day19 = Day19()
-    day19.solve()
+    day19.solve(1000)
 
 }
 
