@@ -50,6 +50,8 @@ operator fun Point.inc() = right()
 fun Point.perpendicular() = listOf(left(), right())
 operator fun Point.not() = listOf(left(), -this, right())
 
+fun Point.manhattenDistance(other: Point) = (y - other.y).absoluteValue + (x - other.x).absoluteValue
+
 /**
  * Returns a list of points from this point to the other point
  */
