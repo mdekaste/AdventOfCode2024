@@ -1,14 +1,12 @@
 package year2024.day20
 
 import core.AdventOfCode
-import core.groupingBy
 import core.inputParsing.toGrid
 import core.twoDimensional.*
-import kotlin.math.absoluteValue
 
 fun main(){
     val day20 = Day20()
-    day20.solve()
+    day20.solve(1000)
 }
 
 class Day20 : AdventOfCode({
@@ -23,14 +21,12 @@ class Day20 : AdventOfCode({
         }
     }
 
-    fun solve(cheatTime: Int, saveTime: Int) = path
-        .withIndex()
-        .sumOf { (index, point) ->
-            path.subList(index, path.size).withIndex().count { (oIndex, oPoint) ->
-                val distance = point.manhattenDistance(oPoint)
-                distance in 2..cheatTime && oIndex - distance >= saveTime
-            }
+    fun solve(cheatTime: Int, saveTime: Int) = path.withIndex().sumOf { (index, point) ->
+        path.subList(index, path.size).withIndex().count { (oIndex, oPoint) ->
+            val distance = point.manhattanDistance(oPoint)
+            distance in 2..cheatTime && oIndex - distance >= saveTime
         }
+    }
 
 
     part1{
