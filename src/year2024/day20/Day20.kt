@@ -23,12 +23,14 @@ class Day20 : AdventOfCode({
     val path = generateSequence(null as Point? to start) { (prev, cur) -> firstMatch(prev, cur) }
         .map { it.second }
         .withIndex()
-        .associate { it.value to it.index }
+        .toList()
 
     fun solve(cheatTime: Int, saveTime: Int) = path
-        .keys
-        .sumOf { cur -> path.keys
-            .count { it.manhattenDistance(cur) in 2..cheatTime && path.getValue(it) - path.getValue(cur) - it.manhattenDistance(cur) >= saveTime }
+        .sumOf { (index, point) ->
+            path.count { (oIndex, oPoint) ->
+                val distance = point.manhattenDistance(oPoint)
+                distance in 2..cheatTime && index - oIndex - distance >= saveTime
+            }
         }
 
 
