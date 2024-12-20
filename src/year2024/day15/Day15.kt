@@ -15,7 +15,7 @@ context(MutableMap<Point, Char>)
 fun Point.move(dir: Point): Boolean = put(this + dir, remove(this)!!) == null
 
 context(MutableMap<Point, Char>)
-fun Set<Point>.nextSet(dir: Point): Set<Point>? = map(dir::plus).flatMapTo(mutableSetOf()) { destination ->
+private fun Set<Point>.nextSet(dir: Point): Set<Point>? = map(dir::plus).flatMapTo(mutableSetOf()) { destination ->
     when (get(destination)) {
         null -> emptyList()
         '#' -> return null
@@ -26,7 +26,7 @@ fun Set<Point>.nextSet(dir: Point): Set<Point>? = map(dir::plus).flatMapTo(mutab
 }
 
 context(MutableMap<Point, Char>)
-fun Set<Point>.move(dir: Point): Boolean = when(val nextOrigins = nextSet(dir)){
+private fun Set<Point>.move(dir: Point): Boolean = when(val nextOrigins = nextSet(dir)){
     null -> false
     emptySet<Point>() -> all{ it.move(dir) }
     else if nextOrigins.move(dir) -> all{ it.move(dir) }
@@ -34,7 +34,7 @@ fun Set<Point>.move(dir: Point): Boolean = when(val nextOrigins = nextSet(dir)){
 }
 
 context(MutableMap<Point, Char>)
-fun Point.moveRobot(dir: Point): Point = if(setOf(this).move(dir)) this + dir else this
+private fun Point.moveRobot(dir: Point): Point = if(setOf(this).move(dir)) this + dir else this
 
 class Day15 : AdventOfCode({
     //Input parsing
