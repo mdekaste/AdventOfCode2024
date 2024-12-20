@@ -13,6 +13,8 @@ class Day19 : AdventOfCode({
     val (towels, designs) = input.splitOnEmptyLine().let { (a,b) -> a.split(", ").toSet() to b.lines() }
 
     val memoization = mutableMapOf("" to 1L)
+
+    val x = DeepRecursiveFunction
     fun possibleWays(design: String): Long = memoization.getOrPut(design){
         design.indices
             .filter { design.take(it + 1) in towels }

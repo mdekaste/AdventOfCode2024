@@ -3,11 +3,11 @@ package year2024.day20
 import core.AdventOfCode
 import core.inputParsing.toGrid
 import core.twoDimensional.*
-import java.util.LinkedList
+import kotlin.math.min
 
 fun main(){
     val day20 = Day20()
-    day20.solve(100)
+    day20.solve(1000)
 }
 
 typealias Step = Pair<Point?, Point>
@@ -18,9 +18,9 @@ class Day20 : AdventOfCode({
     fun Step.next(): Step? = second.cardinals().firstOrNull { grid[it] != '#' && it != first }?.let { second to it }
     val path = generateSequence(null to start, Step::next).mapTo(mutableListOf(), Step::second)
 
-    fun solve(cheatTime: Int, saveTime: Int) = path.withIndex().sumOf { (index, point) ->
-        path.subList(index, path.size).withIndex().count { (oIndex, oPoint) ->
-            point.manhattanDistance(oPoint).let { it in 2..cheatTime && oIndex - it >= saveTime }
+    fun solve(cheatTime: Int, saveTime: Int) = path.subList(0, path.size - saveTime).withIndex().sumOf { (index, point) ->
+        path.subList(index + saveTime, path.size).withIndex().count { (oIndex, oPoint) ->
+            point.manhattanDistance(oPoint) <= min(cheatTime, oIndex)
         }
     }
 
