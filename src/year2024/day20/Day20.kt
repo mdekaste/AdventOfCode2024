@@ -26,7 +26,7 @@ class Day20 : AdventOfCode({
     fun solve(cheatTime: Int, saveTime: Int) = path
         .withIndex()
         .sumOf { (index, point) ->
-            path.drop(index).withIndex().count { (oIndex, oPoint) ->
+            path.subList(index, path.size).withIndex().count { (oIndex, oPoint) ->
                 val distance = point.manhattenDistance(oPoint)
                 distance in 2..cheatTime && oIndex - distance >= saveTime
             }
