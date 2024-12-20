@@ -12,24 +12,23 @@ fun main(){
 }
 
 class Day20 : AdventOfCode({
-    val parsed = input.toGrid()
-    val start = parsed.entries.first { it.value == 'S' }.key
-
-    fun firstMatch(prevPos: Point? = null, curPos: Point) = curPos
-        .cardinals()
-        .firstOrNull { parsed[it] != '#' && it != prevPos }
-        ?.let { curPos to it }
-
-    val path = generateSequence(null as Point? to start) { (prev, cur) -> firstMatch(prev, cur) }
-        .map { it.second }
-        .withIndex()
-        .toList()
+    val path = buildList {
+        val parsed = input.toGrid()
+        var prev: Point? = null
+        var cur: Point = parsed.entries.first { it.value == 'S' }.key
+        while(add(cur)){
+            val next = cur.cardinals().firstOrNull { parsed[it] != '#' && it != prev } ?: break
+            prev = cur
+            cur = next
+        }
+    }
 
     fun solve(cheatTime: Int, saveTime: Int) = path
+        .withIndex()
         .sumOf { (index, point) ->
-            path.count { (oIndex, oPoint) ->
+            path.drop(index).withIndex().count { (oIndex, oPoint) ->
                 val distance = point.manhattenDistance(oPoint)
-                distance in 2..cheatTime && index - oIndex - distance >= saveTime
+                distance in 2..cheatTime && oIndex - distance >= saveTime
             }
         }
 
