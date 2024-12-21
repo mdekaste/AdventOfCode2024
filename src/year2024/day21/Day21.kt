@@ -72,34 +72,26 @@ class Day21 : Challenge(){
             }
         }.joinToString("", postfix = "A") }
     }
-    fun solve(input: String, size: Int): Long {
-        return ("A" + input).zipWithNext { a, b -> solve(a, b, size, numberspad) }.sum()
-    }
-    data class State(val from: Char, val to: Char, val depth: Int, val keypad: Keypad)
+    fun String.sizeOfCommands(depth: Int, first: Boolean = true): Long = "A$this".zipWithNext { a, b -> State(a, b, depth).solve(first) }.sum()
+
+    data class State(val from: Char, val to: Char, val depth: Int)
     val memoization = mutableMapOf<State, Long>()
-    fun solve(from: Char = 'A', to: Char, depth: Int, keypad: Keypad): Long = memoization.getOrPut(State(from, to, depth, keypad)){
-        val start = keypad.entries.first { it.value == from }.key
-        val target = keypad.entries.first { it.value == to }.key
-        val routes = routes(start, target, keypad)
-        if(depth == 0){
-            routes.first().length.toLong()
-        } else {
-            routes.map { route ->
-                ("A$route").zipWithNext{ a, b -> solve(a, b, depth - 1, directionpad) }.sum()
-            }.min()
+    fun State.solve(first: Boolean): Long = memoization.getOrPut(this){
+        val keypad = if(first) numberspad else directionpad
+        val routes = routes(keypad)
+        when(depth){
+            0 -> routes.first().length.toLong()
+            else -> routes.minOf { it.sizeOfCommands(depth - 1, false) }
         }
     }
 
-
-    override fun part1(): Any? {
-        return parsed.map { line ->
-           solve(line, 2) to line.extractInts()[0]
-        }.onEach { println(it) }.sumOf { (route, size) -> route * size }
+    fun State.routes(keypad: Keypad): List<String> {
+        val start = keypad.entries.first { it.value == from }.key
+        val target = keypad.entries.first { it.value == to }.key
+        return routes(start, target, keypad)
     }
 
-    override fun part2(): Any? {
-        return parsed.map { line ->
-            solve(line, 25) to line.extractInts()[0]
-        }.onEach { println(it) }.sumOf { (route, size) -> route * size }
-    }
+    fun List<String>.solve(size: Int) = sumOf { it.sizeOfCommands(size) * it.extractInts()[0] }
+    override fun part1(): Any? = parsed.solve(2)
+    override fun part2(): Any? = parsed.solve(25)
 }
