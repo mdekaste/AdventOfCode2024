@@ -1,24 +1,30 @@
 package year2024.day21
 
 import core.AdventOfCode
+import core.Challenge
 import core.inputParsing.extractInts
 import core.inputParsing.toGrid
+import core.twoDimensional.EAST
+import core.twoDimensional.NORTH
+import core.twoDimensional.ORIGIN
 import core.twoDimensional.Point
+import core.twoDimensional.SOUTH
+import core.twoDimensional.Segment
+import core.twoDimensional.WEST
 import core.twoDimensional.cardinals
+import core.twoDimensional.plus
 import core.twoDimensional.x
 import core.twoDimensional.y
-import java.util.PriorityQueue
-import kotlin.math.absoluteValue
 
 fun main(){
     val day21 = Day21()
-    day21.solve()
+    day21.part1().let(::println)
 }
-
-class Day21 : AdventOfCode({
+typealias Keypad = Map<Point, Char>
+class Day21 : Challenge(){
     val parsed = input.lines()
 
-    val keypad = """
+    val numberspad = """
         789
         456
         123
@@ -30,81 +36,69 @@ class Day21 : AdventOfCode({
         <v>
     """.trimIndent().toGrid()
 
-    operator fun Point.minus(other: Point): Point = y - other.y to x - other.x
-
-    fun routesFromTo(from: Char, to: Char, pad: Map<Point, Char>): Point {
-        val fromLoc = pad.entries.first { it.value == from }.key
-        val toLoc = pad.entries.first { it.value == to }.key
-        return toLoc - fromLoc
-    }
-
-    fun Point.toDirectionalKeypadRoute(): String = buildString {
-        if(x < 0){
-            repeat(x.absoluteValue){ append('<') }
-        } else if(x > 0){
-            repeat(x){ append('>') }
-        }
-        if(y < 0){
-            repeat(y.absoluteValue){ append('^') }
-        } else if(y > 0){
-            repeat(y){ append('v') }
-        }
-    }
-
-//    fun CharArray.applyMove(targetChar: Char, targetIndex: Int = MAX): String {
-//        val from = this[targetIndex]
-//        val route = routesFromTo(from, targetChar, if (targetIndex == MAX) keypad else directionpad)
-//        this[targetIndex] = targetChar
-//        val keypadRoute = route.toDirectionalKeypadRoute()
-//        if(targetIndex == 0){
-//            return keypadRoute + 'A'
-//        } else if(targetIndex == MAX){
-//            val totalRoute = (keypadRoute + "A").map {
-//                applyMove(it, targetIndex - 1)
-//            }.joinToString("")
-//            return totalRoute
-//        } else {
-//            return keypadRoute.map { applyMove(it, targetIndex - 1) }.joinToString("")
-//        }
-//    }
-
-    val MAX = 3
-    fun CharArray.applyMove2(targetChar: Char, targetIndex: Int): String {
-        val from = this[targetIndex]
-        val route = routesFromTo(from, targetChar, if (targetIndex == MAX) keypad else directionpad)
-        this[targetIndex] = targetChar
-        return route.toDirectionalKeypadRoute() + 'A'
-    }
-
-    fun solve(state: CharArray, goal: String): Int {
-        val route = buildString {
-            for(c in goal){
-                append(state.applyMove2(c, 3))
+    fun routes(start: Point, target: Point, keypad: Keypad): List<String> {
+        val yDiff = target.y - start.y
+        val xDiff = target.x - start.x
+        val yDir = if(yDiff > 0) SOUTH else NORTH
+        val xDir = if(xDiff > 0) EAST else WEST
+        var frontier = listOf(start to listOf<Point>())
+        while(true){
+            val nextFrontier = mutableListOf<Pair<Point, List<Point>>>()
+            for((end, path) in frontier){
+                if(end.x != target.x){
+                    val result = end + xDir
+                    if(keypad[result] != '-')
+                        nextFrontier.add(result to path + xDir)
+                }
+                if(end.y != target.y){
+                    val result = end + yDir
+                    if(keypad[result] != '-')
+                        nextFrontier.add(result to path + yDir)
+                }
             }
-        }
-        val route2 = buildString {
-            for(c in route){
-                append(state.applyMove2(c, 2))
+            if(nextFrontier.isEmpty()){
+                break
             }
+            frontier = nextFrontier
         }
-        val route3 = buildString {
-            for (c in route2) {
-                append(state.applyMove2(c, 1))
+        return frontier.map { it.second.map {
+            when(it){
+                NORTH -> '^'
+                SOUTH -> 'v'
+                EAST -> '>'
+                WEST -> '<'
+                else -> error("invalid direction")
             }
+        }.joinToString("", postfix = "A") }
+    }
+    fun solve(input: String, size: Int): String {
+        return ("A" + input).zipWithNext { a, b -> solve(a, b, size, numberspad) }.joinToString("")
+    }
+    data class State(val from: Char, val to: Char, val depth: Int, val keypad: Keypad)
+    val memoization = mutableMapOf<State, String>()
+    fun solve(from: Char = 'A', to: Char, depth: Int, keypad: Keypad): Long = memoization.getOrPut(State(from, to, depth, keypad)){
+        val start = keypad.entries.first { it.value == from }.key
+        val target = keypad.entries.first { it.value == to }.key
+        val routes = routes(start, target, keypad)
+        if(depth == 0){
+            routes.first()
+        } else {
+            routes.map { route ->
+                ("A$route").zipWithNext{ a, b -> solve(a, b, depth - 1, directionpad) }.joinToString("")
+            }.minBy { it.length }
         }
-        println(route)
-        println(route2)
-        println(route3)
-        val int = goal.extractInts()[0]
-        return route3.length * int
     }
 
-    part1 {
-        val state = CharArray(4) { 'A' }
-        parsed.map { solve(state, goal = it) }.onEach { println(it) }.sum()
+
+    override fun part1(): Any? {
+        return parsed.map { line ->
+           solve(line, 2).length to line.extractInts()[0]
+        }.onEach { println(it) }.sumOf { (route, size) -> route * size }
     }
 
-    part2 {
-        parsed
+    override fun part2(): Any? {
+        return parsed.map { line ->
+            solve(line, 25) to line.extractInts()[0]
+        }.onEach { println(it) }.sumOf { (route, size) -> route.length * size }
     }
-})
+}
