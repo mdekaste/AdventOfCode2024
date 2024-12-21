@@ -19,6 +19,7 @@ import core.twoDimensional.y
 fun main(){
     val day21 = Day21()
     day21.part1().let(::println)
+    day21.part2().let(::println)
 }
 typealias Keypad = Map<Point, Char>
 class Day21 : Challenge(){
@@ -71,34 +72,34 @@ class Day21 : Challenge(){
             }
         }.joinToString("", postfix = "A") }
     }
-    fun solve(input: String, size: Int): String {
-        return ("A" + input).zipWithNext { a, b -> solve(a, b, size, numberspad) }.joinToString("")
+    fun solve(input: String, size: Int): Long {
+        return ("A" + input).zipWithNext { a, b -> solve(a, b, size, numberspad) }.sum()
     }
     data class State(val from: Char, val to: Char, val depth: Int, val keypad: Keypad)
-    val memoization = mutableMapOf<State, String>()
+    val memoization = mutableMapOf<State, Long>()
     fun solve(from: Char = 'A', to: Char, depth: Int, keypad: Keypad): Long = memoization.getOrPut(State(from, to, depth, keypad)){
         val start = keypad.entries.first { it.value == from }.key
         val target = keypad.entries.first { it.value == to }.key
         val routes = routes(start, target, keypad)
         if(depth == 0){
-            routes.first()
+            routes.first().length.toLong()
         } else {
             routes.map { route ->
-                ("A$route").zipWithNext{ a, b -> solve(a, b, depth - 1, directionpad) }.joinToString("")
-            }.minBy { it.length }
+                ("A$route").zipWithNext{ a, b -> solve(a, b, depth - 1, directionpad) }.sum()
+            }.min()
         }
     }
 
 
     override fun part1(): Any? {
         return parsed.map { line ->
-           solve(line, 2).length to line.extractInts()[0]
+           solve(line, 2) to line.extractInts()[0]
         }.onEach { println(it) }.sumOf { (route, size) -> route * size }
     }
 
     override fun part2(): Any? {
         return parsed.map { line ->
             solve(line, 25) to line.extractInts()[0]
-        }.onEach { println(it) }.sumOf { (route, size) -> route.length * size }
+        }.onEach { println(it) }.sumOf { (route, size) -> route * size }
     }
 }
