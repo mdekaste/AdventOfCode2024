@@ -69,6 +69,6 @@ fun <K, V> Map<K,V>.merge(other: Map<K,V>, mergeFunction: (V, V) -> V): Map<K,V>
 @JvmName("mergeMutableMap")
 fun <K, V> MutableMap<K,V>.merge(other: Map<K,V>, mergeFunction: (V, V) -> V): MutableMap<K, V> = apply {
     other.forEach { (key, value) ->
-        this[key] = mergeFunction(this[key] ?: value, value)
+        this[key] = this[key]?.let { mergeFunction(it, value) } ?: value
     }
 }
