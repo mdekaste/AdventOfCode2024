@@ -8,17 +8,20 @@ fun main(){
     day22.solve()
 }
 
-const val MOD = 16777216L
 class Day22 : AdventOfCode({
-    val parsed = input.lines().map(String::toLong)
-
     fun Long.mix(secret: Long) = this xor secret
-    fun Long.prune() = this % MOD
+    fun Long.prune() = this % 16777216L
     fun Long.step(calc: (Long) -> Long) = calc(this).mix(this).prune()
     fun Long.nextSecret() = step { it * 64 }.step { it / 32 }.step { it * 2048 }
     fun Long.generateSecrets() = generateSequence(this, Long::nextSecret).take(2001)
 
-    fun Sequence<Long>.to4SequenceMap(): Map<List<Long>, Long> = map { it % 10 }
+    val secrets = input.lines().map(String::toLong).map(Long::generateSecrets)
+
+    part1 {
+        secrets.sumOf(Sequence<Long>::last)
+    }
+
+    fun Sequence<Long>.to4SequenceMap() = map { it % 10 }
         .zipWithNext { a, b -> b to b - a }
         .windowed(4){ (a,b,c,d) -> listOf(a.second, b.second, c.second, d.second) to d.first }
         .groupingBy { (key, value) -> key }
@@ -28,13 +31,8 @@ class Day22 : AdventOfCode({
         oMap.forEach { (key, value) -> merge(key, value, Long::plus) }
     }
 
-    part1 {
-        parsed.map(Long::generateSecrets).sumOf(Sequence<Long>::last)
-    }
-
     part2 {
-        parsed.map(Long::generateSecrets)
-            .map(Sequence<Long>::to4SequenceMap)
+        secrets.map(Sequence<Long>::to4SequenceMap)
             .fold(mutableMapOf<List<Long>, Long>(), MutableMap<List<Long>, Long>::combine)
             .values
             .max()
