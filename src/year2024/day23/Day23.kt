@@ -14,6 +14,7 @@ class Day23 : Challenge(){
         .groupBy ({it.first}, {it.second})
         .mapValues { it.value.toSet() }
 
+
     val regionsOfThree = buildSet<MutableSet<String>> {
         for((from, to) in parsed){
             for(target in to){
