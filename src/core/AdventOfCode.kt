@@ -4,12 +4,11 @@ import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 
 abstract class AdventOfCode(
-    val init: AdventOfCodeBuilder.() -> Unit
+    init: AdventOfCodeBuilder.() -> Unit
 ) {
     open val name: String? = null
-    private val input = javaClass.getResource("input.txt").readText()
+    private val input = javaClass.getResource("input.txt")?.readText() ?: error("Input file not found")
     private val builder = AdventOfCodeBuilder(input).apply(init)
-
 
     fun part1() = println("Part 1: ${builder.part1.invoke()}")
     fun part2() = println("Part 2: ${builder.part2.invoke()}")
