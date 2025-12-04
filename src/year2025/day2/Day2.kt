@@ -8,11 +8,14 @@ fun main(){
 }
 
 
-
 object Day2 : AdventOfCode({
+    fun String.toLongRange() = split("-")
+        .map(String::toLong)
+        .let { (a,b) -> a..b }
+
     val parsed = input
         .split(",")
-        .map { it.split("-").let { (a,b) -> a.toLong()..b.toLong() } }
+        .map(String::toLongRange)
 
     fun solve(regex: Regex) = parsed.flatMap { range ->
         range.filter { number -> number.toString().matches(regex) }
