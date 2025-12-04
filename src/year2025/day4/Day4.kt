@@ -1,6 +1,7 @@
 package year2025.day4
 
 import core.AdventOfCode
+import core.Cycle
 import core.inputParsing.toGrid
 import core.twoDimensional.Grid
 import core.twoDimensional.intercardinals
@@ -19,16 +20,15 @@ object Day4 : AdventOfCode({
             else -> char
         }
     }
+
     fun Grid<Char>.countRolls() = count { it.value == '@' }
 
     part1{
         parsed.countRolls() - parsed.step().countRolls()
     }
     part2{
-        generateSequence(parsed, Grid<Char>::step)
-            .zipWithNext()
-            .takeWhile { it.first != it.second }
-            .last().second
-            .let { parsed.countRolls() - it.countRolls() }
+        parsed.countRolls() - Cycle.of(parsed, Grid<Char>::step)
+            .repeatedElement
+            .value.countRolls()
     }
 })
