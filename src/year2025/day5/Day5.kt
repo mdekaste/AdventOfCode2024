@@ -20,9 +20,10 @@ object Day5 : AdventOfCode({
             freshRange.lines().forEach { freshLine ->
                 val (left, right) = freshLine.split("-").map(String::toLong)
                 val fromBoundValue = map.ceilingEntry(left).value
+                val toBoundValue = map.higherEntry(right + 1).value
                 map.subMap(left, true, right + 1, true).clear()
-                if (!fromBoundValue) map[left] = false
-                map[right + 1] = true
+                if(!fromBoundValue) map[left] = false
+                if(!toBoundValue) map[right + 1] = true
             }
             ingredients.lines().map(String::toLong)
         }
