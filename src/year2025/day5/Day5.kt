@@ -13,20 +13,20 @@ fun main(){
 }
 
 object Day5 : AdventOfCode({
-    val (fresh, ingredients) = input
+    val map = TreeMap<Long, Boolean>()
+    val ingredients = input
         .splitOnEmptyLine()
-        .let { (a,b) ->
-            a.lines().map { it.split("-").map(String::toLong).let { (x, y) -> x..y } } to
+        .let { (a, b) ->
+            a.lines().forEach {
+                val (left, right) = it.split("-").map(String::toLong)
+                val fromBoundValue = map.ceilingEntry(left)?.value ?: false
+                val untilBoundValue = map.higherEntry(right + 1)?.value ?: false
+                map.subMap(left, true, right + 1, true).clear()
+                if (!fromBoundValue) map[left] = false
+                if (!untilBoundValue) map[right + 1] = true
+            }
             b.lines().map(String::toLong)
         }
-    val map = TreeMap<Long, Boolean>()
-    fresh.forEach { l ->
-        val fromBoundValue = map.ceilingEntry(l.first)?.value ?: false
-        val untilBoundValue = map.higherEntry(l.last + 1)?.value ?: false
-        map.subMap(l.first, true, l.last + 1, true).clear()
-        if (!fromBoundValue) map[l.first] = false
-        if (!untilBoundValue) map[l.last + 1] = true
-    }
     part1{
         ingredients.count{ map.ceilingEntry(it)?.value ?: false }
     }
