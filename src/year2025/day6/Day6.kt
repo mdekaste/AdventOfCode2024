@@ -22,20 +22,19 @@ object Day6 : AdventOfCode({
                 }
             }
     }
+    part2 {
+        fun List<String>.flipDiagonal(): List<String> = first().indices.map { x ->
+            indices.map { y -> get(y)[x] }.joinToString("").trim()
+        }
 
-    fun List<String>.flipDiagonal(): List<String> = first().indices.map { x ->
-        indices.map { y -> get(y)[x] }.joinToString("").trim()
-    }
+        data class Aggregate(val sum: Long, val agg: Long, val op: Char)
 
-    data class Aggregate(val sum: Long, val agg: Long, val op: Char) {
-        fun submit(line: String): Aggregate = when {
+        fun Aggregate.submit(line: String): Aggregate = when {
             line.isEmpty() -> copy(sum = sum + agg, agg = 0)
             !line.last().isDigit() -> copy(agg = line.dropLast(1).trim().toLong(), op = line.last())
             else -> copy(agg = if (op == '*') agg * line.toLong() else agg + line.toLong())
         }
-    }
 
-    part2 {
         input.lines()
             .flipDiagonal()
             .fold(Aggregate(0, 0, '-'), Aggregate::submit)
