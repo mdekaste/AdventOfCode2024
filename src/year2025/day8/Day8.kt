@@ -1,28 +1,27 @@
 package year2025.day8
 
 import core.AdventOfCode
+import core.removeFirstBy
+import java.util.PriorityQueue
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 fun main(){
-    Day8.part1()
-    Day8.part2()
+    Day8().solve()
 }
 
-
-
-object Day8 : AdventOfCode({
+class Day8 : AdventOfCode({
     val points: List<Point3D> = input.lines()
         .map { it.split(",").map(String::toInt).let{ (a,b,c) -> Triple(a,b,c) } }
 
     val pairsByDistance = points
-        .flatMapIndexed { index, p1 -> points.drop(index + 1).map { p2 -> p1 to p2 } }
+        .flatMapIndexed { index, p1 -> points.subList(index + 1, points.size).map { p2 -> p1 to p2 } }
         .sortedBy { (p1, p2) -> p1.distanceTo(p2) }
 
     var part1: Int = 0
     var part2: Int = 0
 
-    buildList<Set<Point3D>>{
+    buildList {
         addAll(points.map { setOf(it) } )
         pairsByDistance.forEachIndexed { index, (p1, p2) ->
             if(index == 1000){
@@ -36,15 +35,15 @@ object Day8 : AdventOfCode({
             }
             remove(circuit1)
             remove(circuit2)
-            add(circuit1 + circuit2)
+            addFirst(circuit1 + circuit2)
         }
     }
 
     part1{
-       part1
+        part1
     }
     part2{
-       part2
+        part2
     }
 })
 
@@ -56,3 +55,4 @@ typealias Point3D = Triple<Int, Int, Int>
 val Point3D.x get() = first
 val Point3D.y get() = second
 val Point3D.z get() = third
+

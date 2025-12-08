@@ -55,3 +55,15 @@ fun <T> List<T>.permutations(): List<List<T>> {
     generate(size)
     return result
 }
+
+fun <T> MutableCollection<T>.removeFirstBy(predicate: (T) -> Boolean): T? {
+    val iterator = iterator()
+    while(iterator.hasNext()){
+        val item = iterator.next()
+        if(predicate(item)){
+            iterator.remove()
+            return item
+        }
+    }
+    return null
+}

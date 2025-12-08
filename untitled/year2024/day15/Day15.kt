@@ -11,12 +11,12 @@ fun main(){
     day15.solve(10)
 }
 //Move Logic
-context(MutableMap<Point, Char>)
-fun Point.move(dir: Point): Boolean = put(this + dir, remove(this)!!) == null
+context(map: MutableMap<Point, Char>)
+fun Point.move(dir: Point): Boolean = map.put(this + dir, map.remove(this)!!) == null
 
-context(MutableMap<Point, Char>)
+context(map: MutableMap<Point, Char>)
 private fun Set<Point>.nextSet(dir: Point): Set<Point>? = map(dir::plus).flatMapTo(mutableSetOf()) { destination ->
-    when (get(destination)) {
+    when (map.get(destination)) {
         null -> emptyList()
         '#' -> return null
         '[' if dir in setOf(NORTH, SOUTH) -> listOf(destination, destination + EAST)

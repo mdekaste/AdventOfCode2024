@@ -4,25 +4,33 @@ import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 
 abstract class AdventOfCode(
-    init: AdventOfCodeBuilder.() -> Unit
+    private val init: AdventOfCodeBuilder.() -> Unit
 ) {
     open val name: String? = null
     private val input = javaClass.getResource("input.txt")?.readText() ?: error("Input file not found")
-    private val builder = AdventOfCodeBuilder(input).apply(init)
+    var builder = AdventOfCodeBuilder(input)
+
+    init {
+        builder.apply(init)
+    }
 
     fun part1() = println("Part 1: ${builder.part1.invoke()}")
     fun part2() = println("Part 2: ${builder.part2.invoke()}")
 
     fun solve(preheat: Int = 0) {
         repeat(preheat) {
+            builder.apply(init)
             builder.part1.invoke()
             builder.part2.invoke()
         }
+        val (init, initTime) = measureTimedValue { builder.apply(init) }
         val (part1, time1) = measureTimedValue { builder.part1.invoke() }
         val (part2, time2) = measureTimedValue { builder.part2.invoke() }
         println(
             buildString {
                 appendLine("Solution for ${this@AdventOfCode::class.simpleName}: ${name ?: ""}")
+                appendLine("---------Initialization-----------")
+                appendLine("time: $initTime")
                 appendLine("---------Part 1-----------")
                 appendLine("time: $time1")
                 appendLine("answer: $part1")
@@ -30,7 +38,7 @@ abstract class AdventOfCode(
                 appendLine("time: $time2")
                 appendLine("answer: $part2")
                 appendLine("---------Total-----------")
-                appendLine("time: ${time1 + time2}")
+                appendLine("time: ${initTime + time1 + time2}")
                 appendLine("---------End-----------")
             }
         )
