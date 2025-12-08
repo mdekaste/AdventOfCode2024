@@ -1,10 +1,7 @@
 package year2025.day8
 
 import core.AdventOfCode
-import core.Point3D
-import core.x
-import core.y
-import core.z
+import kotlin.math.pow
 import kotlin.math.sqrt
 
 fun main(){
@@ -12,42 +9,50 @@ fun main(){
     Day8.part2()
 }
 
-fun Point3D.distanceTo(other: Point3D): Double{
-    return sqrt((x - other.x.toLong()) * (x - other.x) + (y - other.y.toLong()) * (y - other.y.toLong()) + (z - other.z.toLong()) * (z - other.z).toDouble())
-}
+
 
 object Day8 : AdventOfCode({
-    val parsed: List<Point3D> = input.lines().map { it.split(",").map { it.toInt() }.let { it[0] to it[1] to it[2] } }
-    part1{
-        val combinations = parsed.flatMapIndexed { i, p1 -> parsed.drop(i + 1).map { p2 -> p1 to p2 } }
-        val sorted = combinations.sortedBy { (p1, p2) -> p1.distanceTo(p2) }
-        val circuits: MutableList<Set<Point3D>> = parsed.map { setOf(it) }.toMutableList()
-        sorted.take(10).forEachIndexed { index, (p1 ,p2) ->
-            val circuit1 = circuits.first { p1 in it }
-            val circuit2 = circuits.first { p2 in it }
-            circuits.remove(circuit1)
-            circuits.remove(circuit2)
-            val newCircuit = circuit1 + circuit2
-            circuits.add(newCircuit)
+    val points: List<Point3D> = input.lines()
+        .map { it.split(",").map(String::toInt).let{ (a,b,c) -> Triple(a,b,c) } }
+
+    val pairsByDistance = points
+        .flatMapIndexed { index, p1 -> points.drop(index + 1).map { p2 -> p1 to p2 } }
+        .sortedBy { (p1, p2) -> p1.distanceTo(p2) }
+
+    var part1: Int = 0
+    var part2: Int = 0
+
+    buildList<Set<Point3D>>{
+        addAll(points.map { setOf(it) } )
+        pairsByDistance.forEachIndexed { index, (p1, p2) ->
+            if(index == 1000){
+                part1 = map { it.size }.sortedDescending().take(3).reduce(Int::times)
+            }
+            val circuit1 = first { p1 in it }
+            val circuit2 = first { p2 in it }
+            if(size == 2 && circuit1 != circuit2){
+                part2 = p1.x * p2.x
+                return@buildList
+            }
+            remove(circuit1)
+            remove(circuit2)
+            add(circuit1 + circuit2)
         }
-        circuits.sortedByDescending { it.size }.forEach { println(it) }
-        circuits.sortedByDescending { it.size }.take(3).forEach { println(it) }
-        circuits.sortedByDescending { it.size }.take(3).let{ (a,b,c) -> a.size.toLong() * b.size * c.size}
+    }
+
+    part1{
+       part1
     }
     part2{
-        val combinations = parsed.flatMapIndexed { i, p1 -> parsed.drop(i + 1).map { p2 -> p1 to p2 } }
-        val sorted = combinations.sortedBy { (p1, p2) -> p1.distanceTo(p2) }
-        val circuits: MutableList<Set<Point3D>> = parsed.map { setOf(it) }.toMutableList()
-        sorted.forEach { (p1, p2) ->
-            val circuit1 = circuits.first { p1 in it }
-            val circuit2 = circuits.first { p2 in it }
-            if(circuits.size == 2 && circuit1 != circuit2){
-                return@part2 p1.z * p2.z
-            }
-            circuits.remove(circuit1)
-            circuits.remove(circuit2)
-            val newCircuit = circuit1 + circuit2
-            circuits.add(newCircuit)
-        }
+       part2
     }
 })
+
+fun Point3D.distanceTo(other: Point3D): Double = sqrt(
+    (x - other.x).toDouble().pow(2) + (y - other.y).toDouble().pow(2) + (z - other.z).toDouble().pow(2)
+)
+
+typealias Point3D = Triple<Int, Int, Int>
+val Point3D.x get() = first
+val Point3D.y get() = second
+val Point3D.z get() = third
