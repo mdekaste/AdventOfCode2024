@@ -3,6 +3,7 @@ package year2025.day7
 import core.AdventOfCode
 import core.groupingBy
 import core.inputParsing.toGrid
+import core.merge
 import core.twoDimensional.Grid
 import core.twoDimensional.Point
 import core.twoDimensional.east
@@ -25,11 +26,10 @@ object Day7 : AdventOfCode({
             frontier.forEach { (pos, count) ->
                 val next = pos.south()
                 when (parsed[next]) {
-                    '^' -> {
-                        compute(next.west()){ _, v -> v?.plus(count) ?: count }
-                        compute(next.east()){ _, v -> v?.plus(count) ?: count }
+                    '^' -> listOf(next.west(), next.east()).forEach {
+                        merge(it, count, Long::plus)
                     }
-                    '.' -> compute(next){ _, v -> v?.plus(count) ?: count }
+                    '.' -> merge(next, count, Long::plus)
                 }
             }
         },
